@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="guidex.system.mapper.video.UserVideoResultsMapper">
+    
+    <resultMap type="UserVideoResults" id="UserVideoResultsResult">
+        <result property="id"    column="id"    />
+        <result property="videoId"    column="video_id"    />
+        <result property="issueCount"    column="issue_count"    />
+        <result property="resultDetail"    column="result_detail"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="coachInquiryStatus"    column="coach_inquiry_status"    />
+        <result property="coachInquiryDetail"    column="coach_inquiry_detail"    />
+        <result property="coachUserId"    column="coach_user_id"    />
+        <result property="coachName"    column="coach_name"    />
+        <result property="score"    column="score"    />
+        <result column="ski_location" property="skiLocation"/>
+        <result column="ski_time" property="skiTime"/>
+        <result column="ski_title" property="skiTitle"/>
+        <result property="isDeleted"    column="is_deleted"    />
+        <result column="category" property="category"/>
+        <result column="type" property="type"/>
+        <result column="standard" property="standard"/>
+    </resultMap>
+
+    <sql id="selectUserVideoResultsVo">
+        select id, video_id, issue_count, result_detail, created_time,coach_inquiry_status, coach_inquiry_detail, coach_user_id, coach_name, score, ski_location, ski_time,ski_title,is_deleted, category, type, standard from user_video_results
+    </sql>
+
+    <select id="selectUserVideoResultsList" parameterType="UserVideoResults" resultMap="UserVideoResultsResult">
+        <include refid="selectUserVideoResultsVo"/>
+        <where>  
+            <if test="videoId != null "> and video_id = #{videoId}</if>
+            <if test="issueCount != null "> and issue_count = #{issueCount}</if>
+            <if test="resultDetail != null  and resultDetail != ''"> and result_detail = #{resultDetail}</if>
+            <if test="coachInquiryStatus !=null and coachInquiryStatus != ''"> and coach_inquiry_status = #{coachInquiryStatus}</if>
+            <if test="coachUserId != null "> and coach_user_id = #{coachUserId}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+            <if test="score != null "> and score = #{score}</if>
+            <if test="skiLocation != null"> and ski_location = #{skiLocation}</if>
+            <if test="skiTime != null "> and ski_time = #{skiTime}</if>
+            <if test="skiTitle != null"> and ski_title = #{skiTitle}</if>
+            <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserVideoResultsById" parameterType="Long" resultMap="UserVideoResultsResult">
+        <include refid="selectUserVideoResultsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserVideoResults" parameterType="UserVideoResults" useGeneratedKeys="true" keyProperty="id">
+        insert into user_video_results
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="videoId != null">video_id,</if>
+            <if test="issueCount != null">issue_count,</if>
+            <if test="resultDetail != null">result_detail,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="score != null">score,</if>
+            <if test="skiLocation != null">ski_location,</if>
+            <if test="skiTime != null">ski_time,</if>
+            <if test="skiTitle != null">ski_title,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="videoId != null">#{videoId},</if>
+            <if test="issueCount != null">#{issueCount},</if>
+            <if test="resultDetail != null">#{resultDetail},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="score != null">#{score},</if>
+            <if test="skiLocation != null">#{skiLocation},</if>
+            <if test="skiTime != null">#{skiTime},</if>
+            <if test="skiTitle != null">#{skiTitle},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserVideoResults" parameterType="UserVideoResults">
+        update user_video_results
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="videoId != null">video_id = #{videoId},</if>
+            <if test="issueCount != null">issue_count = #{issueCount},</if>
+            <if test="resultDetail != null">result_detail = #{resultDetail},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="coachInquiryStatus != null">coach_inquiry_status = #{coachInquiryStatus},</if>
+            <if test="coachInquiryDetail != null">coach_inquiry_detail = #{coachInquiryDetail},</if>
+            <if test="coachUserId != null">coach_user_id = #{coachUserId},</if>
+            <if test="coachName != null">coach_name = #{coachName},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="skiLocation != null">ski_location = #{skiLocation},</if>
+            <if test="skiTime != null">ski_time = #{skiTime},</if>
+            <if test="skiTitle != null">ski_title = #{skiTitle},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserVideoResultsById" parameterType="Long">
+        delete from user_video_results where id = #{id}
+    </delete>
+
+    <delete id="deleteUserVideoResultsByIds" parameterType="String">
+        delete from user_video_results where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectUserResultsWithVideo" resultType="guidex.system.domain.video.UserVideoResultsDto">
+        SELECT
+            r.id AS id,
+            r.video_id AS videoId,
+            r.result_detail AS resultDetail,
+            r.issue_count AS issueCount,
+            r.ski_location AS skiLocation,
+            r.ski_time AS skiTime,
+            r.ski_title AS skiTitle,
+            r.is_deleted AS isDeleted,
+            r.created_time AS createdTime
+        FROM user_video_results r
+                 INNER JOIN user_video v ON r.video_id = v.id
+        WHERE v.user_id = #{userId} AND r.is_deleted = 0
+    </select>
+</mapper>

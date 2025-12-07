@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="guidex.system.mapper.issues.UserAnalysisIssuesMapper">
+    
+    <resultMap type="UserAnalysisIssues" id="UserAnalysisIssuesResult">
+        <result property="id"    column="id"    />
+        <result property="resultId"    column="result_id"    />
+        <result property="type"    column="type"    />
+        <result property="description"    column="description"    />
+        <result property="time"    column="time"    />
+        <result property="suggestion"    column="suggestion"    />
+        <result property="thumb"    column="thumb"    />
+        <result property="coverUrl"    column="cover_url"    />
+    </resultMap>
+
+    <sql id="selectUserAnalysisIssuesVo">
+        select id, result_id, type, description, time, suggestion, thumb,cover_url
+        from user_analysis_issues
+    </sql>
+
+    <select id="selectUserAnalysisIssuesList" parameterType="UserAnalysisIssues" resultMap="UserAnalysisIssuesResult">
+        <include refid="selectUserAnalysisIssuesVo"/>
+        <where>
+            <if test="resultId != null ">and result_id = #{resultId}</if>
+            <if test="type != null ">and type = #{type}</if>
+            <if test="description != null  and description != ''">and description = #{description}</if>
+            <if test="time != null ">and time = #{time}</if>
+            <if test="suggestion != null  and suggestion != ''">and suggestion = #{suggestion}</if>
+            <if test="thumb != null ">and thumb = #{thumb}</if>
+            <if test="coverUrl != null  and coverUrl != ''">and cover_url = #{coverUrl}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserAnalysisIssuesById" parameterType="Long" resultMap="UserAnalysisIssuesResult">
+        <include refid="selectUserAnalysisIssuesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserAnalysisIssues" parameterType="UserAnalysisIssues" useGeneratedKeys="true" keyProperty="id">
+        insert into user_analysis_issues
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resultId != null">result_id,</if>
+            <if test="type != null">type,</if>
+            <if test="description != null">description,</if>
+            <if test="time != null">time,</if>
+            <if test="suggestion != null">suggestion,</if>
+            <if test="thumb != null">thumb,</if>
+            <if test="coverUrl != null">cover_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="resultId != null">#{resultId},</if>
+            <if test="type != null">#{type},</if>
+            <if test="description != null">#{description},</if>
+            <if test="time != null">#{time},</if>
+            <if test="suggestion != null">#{suggestion},</if>
+            <if test="thumb != null">#{thumb},</if>
+            <if test="coverUrl != null">#{coverUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserAnalysisIssues" parameterType="UserAnalysisIssues">
+        update user_analysis_issues
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="resultId != null">result_id = #{resultId},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="suggestion != null">suggestion = #{suggestion},</if>
+            <if test="thumb != null">thumb = #{thumb},</if>
+            <if test="coverUrl != null">cover_url = #{coverUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserAnalysisIssuesById" parameterType="Long">
+        delete from user_analysis_issues where id = #{id}
+    </delete>
+
+    <delete id="deleteUserAnalysisIssuesByIds" parameterType="String">
+        delete from user_analysis_issues where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectUserAnalysisIssuesByResultIds" resultType="guidex.system.domain.issues.UserAnalysisIssues">
+        SELECT
+        id,
+        result_id AS resultId,
+        type,
+        description,
+        time,
+        suggestion,
+        thumb,
+        cover_url AS coverUrl
+        FROM user_analysis_issues
+        WHERE result_id IN
+        <foreach collection="resultIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

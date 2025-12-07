@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="guidex.system.mapper.FeedbackMapper">
+    
+    <resultMap type="Feedback" id="FeedbackResult">
+        <result property="id"    column="id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="coachId"    column="coach_id"    />
+        <result property="coachName"    column="coach_name"    />
+        <result property="content"    column="content"    />
+        <result property="ext"    column="ext"    />
+    </resultMap>
+
+    <sql id="selectFeedbackVo">
+        select id, record_id, coach_id, coach_name, content, ext from feedback
+    </sql>
+
+    <select id="selectFeedbackList" parameterType="Feedback" resultMap="FeedbackResult">
+        <include refid="selectFeedbackVo"/>
+        <where>  
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="coachId != null "> and coach_id = #{coachId}</if>
+            <if test="coachName != null  and coachName != ''"> and coach_name like concat('%', #{coachName}, '%')</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="ext != null  and ext != ''"> and ext = #{ext}</if>
+        </where>
+    </select>
+    
+    <select id="selectFeedbackById" parameterType="Long" resultMap="FeedbackResult">
+        <include refid="selectFeedbackVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFeedback" parameterType="Feedback" useGeneratedKeys="true" keyProperty="id">
+        insert into feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="coachId != null">coach_id,</if>
+            <if test="coachName != null">coach_name,</if>
+            <if test="content != null">content,</if>
+            <if test="ext != null">ext,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="coachId != null">#{coachId},</if>
+            <if test="coachName != null">#{coachName},</if>
+            <if test="content != null">#{content},</if>
+            <if test="ext != null">#{ext},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFeedback" parameterType="Feedback">
+        update feedback
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+            <if test="coachName != null">coach_name = #{coachName},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="ext != null">ext = #{ext},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFeedbackById" parameterType="Long">
+        delete from feedback where id = #{id}
+    </delete>
+
+    <delete id="deleteFeedbackByIds" parameterType="String">
+        delete from feedback where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
