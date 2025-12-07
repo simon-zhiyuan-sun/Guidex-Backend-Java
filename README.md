@@ -62,3 +62,6 @@
 **Simon Zhiyuan Sun**
 *Backend Engineer | Toronto, ON*
 [LinkedIn](https://www.linkedin.com/in/simon-zhiyuan-sun) | [Email](mailto:simon.zhiyuan.sun@outlook.com)
+
+## 🙌 Acknowledgements
+Frontend and Product Concept developed in collaboration with [Taobowen](https://github.com/taobowen/AI_Skiing_Coach).
