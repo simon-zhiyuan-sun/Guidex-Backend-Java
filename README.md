@@ -9,6 +9,74 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
+## ⚙️System Architecture Diagram
+```mermaid
+graph TD
+
+%% =========================
+%% Nodes
+%% =========================
+
+Client["📱 iOS Client App"]
+Nginx["🌀 Nginx Gateway"]
+
+subgraph AWS_Backend["AWS EC2 - Backend"]
+    SpringBoot["🔧 Spring Boot Service"]
+    ThreadPool["⚙️ Async Task Executor"]
+end
+
+subgraph CloudStorage["Cloud Storage"]
+    GCS["☁️ Google Cloud Storage"]
+end
+
+subgraph AIProcessing["AI Processing Pipeline"]
+    PythonOpenPose["🤖 Python OpenPose Pose Extraction"]
+    SageMaker["📊 AWS SageMaker High Level Analysis"]
+end
+
+subgraph DataPersistence["Data Persistence"]
+    MySQL["🗄️ MySQL Analysis Records"]
+    Redis["⚡ Redis Task Status Cache"]
+end
+
+%% =========================
+%% Flows
+%% =========================
+
+%% Login
+Client -->|0 Login Get JWT| Nginx
+Nginx -->|0.1 Forward Login| SpringBoot
+SpringBoot -->|0.2 Issue JWT| Nginx
+Nginx -->|0.3 Return JWT| Client
+
+%% Upload
+Client -->|1 Upload Video and Type with JWT| Nginx
+Nginx -->|2 Forward Request| SpringBoot
+
+SpringBoot -->|3 Upload Raw Video| GCS
+SpringBoot -->|4 Create Task with videoURL and type| ThreadPool
+SpringBoot -->|4.1 Return videoId and status PROCESSING| Client
+
+%% Async AI
+ThreadPool -->|5 Start AI Pipeline| PythonOpenPose
+PythonOpenPose -->|6 Download Video via URL| GCS
+PythonOpenPose -->|7 Pose JSON| SageMaker
+SageMaker -->|8 Final Analysis JSON| SpringBoot
+
+%% Save
+SpringBoot -->|9 Save Result| MySQL
+SpringBoot -->|10 Update Status| Redis
+
+%% Polling
+Client -->|11 Poll Status or Result by videoId| Nginx
+Nginx -->|12 Forward Poll Request| SpringBoot
+SpringBoot -->|13 Read Status| Redis
+SpringBoot -->|14 Read Details| MySQL
+SpringBoot -->|15 Return Status or Result| Client
+
+```
+
+---
 
 ## 🎥 Project Demo (TestFlight Release)
 ![final1](https://github.com/user-attachments/assets/947162ae-5c2e-44e6-a0ed-ff9ac5ef6c32)
@@ -44,7 +112,7 @@
 
 ### 3. Cloud Infrastructure & Storage
 - **Compute:** Deployed directly on **AWS EC2** (Linux/Ubuntu) for high performance.
-- **Multi-Cloud Storage:** Implemented a robust storage strategy using both **AWS S3** and **Google Cloud Storage (GCS)** to manage raw video assets and processed results securely.
+- **Multi-Cloud Storage:** Implemented a robust storage strategy using **Google Cloud Storage (GCS)** to manage raw video assets and processed results securely.
 
 ---
 
@@ -54,9 +122,11 @@
 - **Database:** MySQL 8.0, Redis 6.0
 - **ORM:** MyBatis Plus
 - **Build Tool:** Maven
-- **DevOps:** Docker, Shell Scripting, Git
+- **DevOps:** Nginx, Shell Scripting, Git
 
 ---
+
+
 
 ### 👤 Author
 **Simon Zhiyuan Sun**
